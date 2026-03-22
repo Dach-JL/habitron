@@ -1,0 +1,23 @@
+# Build output
+target/
+
+# TeaVM generated JS (rebuild from source)
+webapp/js/
+
+# Downloaded tools
+apache-maven-3.9.9/
+maven.tar.gz
+jdk11.zip
+jdk-11*/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db

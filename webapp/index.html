@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Adaptive Daily Decision Engine</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div id="app">
+      <h1>Daily Decision Engine</h1>
+      <p id="status">Compiling core logic...</p>
+    </div>
+    
+    <!-- Load TeaVM generated output -->
+    <script type="text/javascript" charset="utf-8" src="js/classes.js"></script>
+    <script>
+      // TeaVM exports main() — invoke it to start the engine
+      if (typeof main === 'function') {
+        main();
+      }
+    </script>
+  </body>
+</html>
