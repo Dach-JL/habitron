@@ -1,10 +1,6 @@
 package com.habitron.engine.ui;
 
-import com.habitron.engine.model.DecisionSession;
-import com.habitron.engine.model.DecisionTemplate;
-import com.habitron.engine.model.TemplateManager;
-import com.habitron.engine.model.Option;
-import com.habitron.engine.model.Criterion;
+import com.habitron.engine.model.*;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLInputElement;
@@ -16,17 +12,25 @@ import java.util.List;
 
 /**
  * Decision screen — where the user inputs options, criteria, and scores.
- * Enforces strict constraints and provides a real-time score matrix.
  */
 public class DecisionScreen {
 
     private final HTMLDocument document;
     private final TemplateManager templateManager;
+    private final ScoringEngine scoringEngine;
     private DecisionSession currentSession;
+    private Router router;
+    private ResultScreen resultScreen;
 
     public DecisionScreen(HTMLDocument document, TemplateManager templateManager) {
         this.document = document;
         this.templateManager = templateManager;
+        this.scoringEngine = new ScoringEngine();
+    }
+
+    public void setRouter(Router router, ResultScreen resultScreen) {
+        this.router = router;
+        this.resultScreen = resultScreen;
     }
 
     /** Render the template selection grid */
@@ -89,7 +93,6 @@ public class DecisionScreen {
         }
     }
 
-    /** Initialize a new session from a template and render the form */
     private void startDecision(DecisionTemplate template) {
         currentSession = new DecisionSession((template == null) ? "New Decision" : template.getName());
         
@@ -97,7 +100,6 @@ public class DecisionScreen {
             for (Option o : template.getOptions()) currentSession.addOption(new Option(o.getName(), o.isComfort(), o.isDiscipline()));
             for (Criterion c : template.getCriteria()) currentSession.addCriterion(new Criterion(c.getName(), c.getWeight()));
         } else {
-            // Default blank state: 2 options, 1 criterion
             currentSession.addOption(new Option("Option 1", true, false));
             currentSession.addOption(new Option("Option 2", false, true));
             currentSession.addCriterion(new Criterion("Criterion 1", 1.0));
@@ -106,7 +108,6 @@ public class DecisionScreen {
         renderForm();
     }
 
-    /** Render the interactive input form */
     private void renderForm() {
         HTMLElement container = document.getElementById("screen-decision");
         if (container == null) return;
@@ -117,7 +118,7 @@ public class DecisionScreen {
         html.append("<h2>").append(currentSession.getName()).append("</h2>");
         html.append("</div>");
 
-        // Options Section
+        // Options
         html.append("<section class='form-section'>");
         html.append("<div class='section-header'>");
         html.append("<h3>Options (").append(currentSession.getOptionCount()).append("/5)</h3>");
@@ -139,7 +140,7 @@ public class DecisionScreen {
         html.append("</div>");
         html.append("</section>");
 
-        // Criteria Section
+        // Criteria
         html.append("<section class='form-section'>");
         html.append("<div class='section-header'>");
         html.append("<h3>Criteria (").append(currentSession.getCriteriaCount()).append("/5)</h3>");
@@ -158,11 +159,10 @@ public class DecisionScreen {
             }
             html.append("</div>");
         }
-        html.append("<div id='weight-sum-warning' class='warning-text'></div>");
         html.append("</div>");
         html.append("</section>");
 
-        // Score Matrix Section
+        // Score Matrix
         html.append("<section class='form-section'>");
         html.append("<h3>Scores (0-10)</h3>");
         html.append("<div class='matrix-container'>");
@@ -198,55 +198,37 @@ public class DecisionScreen {
     private void wireFormEvents() {
         document.getElementById("btn-template-back").addEventListener("click", evt -> render());
 
-        // Add Option
         HTMLElement addOpt = document.getElementById("btn-add-option");
-        if (addOpt != null) {
-            addOpt.addEventListener("click", evt -> {
-                saveState();
-                currentSession.addOption(new Option("New Option", false, false));
-                renderForm();
-            });
-        }
+        if (addOpt != null) addOpt.addEventListener("click", evt -> { saveState(); currentSession.addOption(new Option("New Option", false, false)); renderForm(); });
 
-        // Add Criterion
         HTMLElement addCrit = document.getElementById("btn-add-criterion");
-        if (addCrit != null) {
-            addCrit.addEventListener("click", evt -> {
-                saveState();
-                currentSession.addCriterion(new Criterion("New Criterion", 0.0));
-                renderForm();
-            });
-        }
+        if (addCrit != null) addCrit.addEventListener("click", evt -> { saveState(); currentSession.addCriterion(new Criterion("New Criterion", 0.0)); renderForm(); });
 
-        // Remove buttons
         for (int i = 0; i < currentSession.getOptionCount(); i++) {
             final int idx = i;
             HTMLElement btn = document.getElementById("opt-remove-" + i);
-            if (btn != null) btn.addEventListener("click", evt -> {
-                saveState();
-                currentSession.getOptions().remove(idx);
-                renderForm();
-            });
+            if (btn != null) btn.addEventListener("click", evt -> { saveState(); currentSession.getOptions().remove(idx); renderForm(); });
         }
         for (int i = 0; i < currentSession.getCriteriaCount(); i++) {
             final int idx = i;
             HTMLElement btn = document.getElementById("crit-remove-" + i);
-            if (btn != null) btn.addEventListener("click", evt -> {
-                saveState();
-                currentSession.getCriteria().remove(idx);
-                renderForm();
-            });
+            if (btn != null) btn.addEventListener("click", evt -> { saveState(); currentSession.getCriteria().remove(idx); renderForm(); });
         }
 
-        // Calculate
         document.getElementById("btn-calculate").addEventListener("click", evt -> {
             saveState();
             try {
                 currentSession.validate();
-                // Phase 7 will handle scoring. For now, just show success.
-                HTMLElement err = document.getElementById("form-error");
-                err.setInnerHTML("Validation Success! Phase 7 scoring engine will take it from here.");
-                err.getStyle().setProperty("color", "var(--color-discipline)");
+                
+                // --- Phase 7 Logic ---
+                double[] baseScores = scoringEngine.calculateBaseScores(currentSession);
+                int recommendedIdx = scoringEngine.getRecommendedIndex(baseScores);
+                currentSession.setRecommendedIndex(recommendedIdx);
+                
+                // Show results
+                resultScreen.render(currentSession, baseScores);
+                router.navigateTo(Router.SCREEN_RESULT);
+                
             } catch (Exception e) {
                 HTMLElement err = document.getElementById("form-error");
                 err.setInnerHTML(e.getMessage());
@@ -255,40 +237,24 @@ public class DecisionScreen {
         });
     }
 
-    /** Save current UI state back to the session object */
     private void saveState() {
-        // Options
         for (int i = 0; i < currentSession.getOptionCount(); i++) {
             HTMLInputElement nameInp = (HTMLInputElement) document.getElementById("opt-name-" + i);
             HTMLInputElement discInp = (HTMLInputElement) document.getElementById("opt-disc-" + i);
             if (nameInp != null) currentSession.getOptions().get(i).setName(nameInp.getValue());
             if (discInp != null) currentSession.getOptions().get(i).setDiscipline(discInp.isChecked());
         }
-
-        // Criteria
         for (int i = 0; i < currentSession.getCriteriaCount(); i++) {
             HTMLInputElement nameInp = (HTMLInputElement) document.getElementById("crit-name-" + i);
             HTMLInputElement weightInp = (HTMLInputElement) document.getElementById("crit-weight-" + i);
             if (nameInp != null) currentSession.getCriteria().get(i).setName(nameInp.getValue());
-            if (weightInp != null) {
-                try {
-                    currentSession.getCriteria().get(i).setWeight(Double.parseDouble(weightInp.getValue()));
-                } catch (Exception e) {}
-            }
+            if (weightInp != null) { try { currentSession.getCriteria().get(i).setWeight(Double.parseDouble(weightInp.getValue())); } catch (Exception e) {} }
         }
-
-        // Scores
         double[][] scores = new double[currentSession.getOptionCount()][currentSession.getCriteriaCount()];
         for (int i = 0; i < currentSession.getOptionCount(); i++) {
             for (int j = 0; j < currentSession.getCriteriaCount(); j++) {
                 HTMLInputElement scoreInp = (HTMLInputElement) document.getElementById("score-" + i + "-" + j);
-                if (scoreInp != null) {
-                    try {
-                        scores[i][j] = Double.parseDouble(scoreInp.getValue());
-                    } catch (Exception e) {
-                        scores[i][j] = 0.0;
-                    }
-                }
+                if (scoreInp != null) { try { scores[i][j] = Double.parseDouble(scoreInp.getValue()); } catch (Exception e) { scores[i][j] = 0.0; } }
             }
         }
         currentSession.setScores(scores);

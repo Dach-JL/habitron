@@ -33,6 +33,10 @@ public class Client {
         goalManager = new GoalManager();
         goalScreen = new GoalScreen(document, goalManager);
 
+        // Wire screen dependencies
+        decisionScreen.setRouter(router, resultScreen);
+        resultScreen.setRouter(router);
+
         // Render all screens
         homeScreen.render(
             profile.getDisciplineStreak(),
