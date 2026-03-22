@@ -1,62 +1,256 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
+/* ==================== DESIGN TOKENS ==================== */
 :root {
   --bg-dark: #090a0f;
-  --panel-bg: rgba(255, 255, 255, 0.03);
+  --bg-panel: rgba(255, 255, 255, 0.03);
+  --bg-card: rgba(255, 255, 255, 0.05);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
   --text-main: #edf2f7;
+  --text-muted: #718096;
+  --text-dim: #4a5568;
   --color-discipline: #00ff88;
   --color-failure: #ff4a4a;
   --color-warning: #ffcc00;
+  --color-accent: #667eea;
+  --color-accent-glow: rgba(102, 126, 234, 0.3);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-active: rgba(255, 255, 255, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==================== BASE RESET ==================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  padding: 0;
   background-color: var(--bg-dark);
+  background: radial-gradient(ellipse at top left, #121526 0%, #090a0f 50%);
   color: var(--text-main);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: radial-gradient(circle at top left, #121526, #090a0f);
+  overflow-x: hidden;
 }
 
+/* ==================== APP CONTAINER ==================== */
 #app {
-  background: var(--panel-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 50px 40px;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
-  text-align: center;
-  max-width: 600px;
-  width: 90%;
-  animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+  animation: fadeIn 0.6s var(--transition) forwards;
 }
 
-h1 {
+/* ==================== HEADER ==================== */
+#app-header {
+  padding: 24px 0 12px;
+  text-align: center;
+}
+
+#app-header h1 {
   font-weight: 800;
-  margin-top: 0;
-  font-size: 2rem;
-  background: linear-gradient(90deg, #ffffff, #8e9bb0);
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, #ffffff 0%, #8e9bb0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
 }
 
-#status {
-  font-size: 1.1rem;
+/* ==================== NAVIGATION ==================== */
+#app-nav {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  margin-bottom: 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
   font-weight: 600;
-  margin-top: 24px;
-  color: #a0aec0;
-  transition: color 0.4s ease;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
 }
 
+.nav-btn .nav-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.nav-btn:hover {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-btn.active {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+  border: 1px solid var(--glass-border-active);
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
+}
+
+/* ==================== SCREENS ==================== */
+.screen {
+  display: none;
+  flex: 1;
+  animation: screenIn 0.35s var(--transition) forwards;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* ==================== DASHBOARD (HOME) ==================== */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 20px 12px;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.stat-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--glass-border-active);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-value.stat-good { color: var(--color-discipline); }
+.stat-value.stat-bad { color: var(--color-failure); }
+.stat-value.stat-warning { color: var(--color-warning); }
+
+.stat-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--color-accent) 0%, #764ba2 100%);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 4px 20px var(--color-accent-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--color-accent-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ==================== TYPOGRAPHY ==================== */
+.subtext {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+.screen-header {
+  margin-bottom: 28px;
+}
+
+.screen-header h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.screen-desc {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ==================== PLACEHOLDER ==================== */
+.placeholder-content {
+  background: var(--bg-card);
+  border: 1px dashed var(--glass-border-active);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+
+.placeholder-content p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ==================== ANIMATIONS ==================== */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(30px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }

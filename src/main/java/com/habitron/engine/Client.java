@@ -1,54 +1,72 @@
 package com.habitron.engine;
 
 import com.habitron.engine.model.*;
+import com.habitron.engine.ui.*;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
+import org.teavm.jso.dom.events.EventListener;
+import org.teavm.jso.dom.events.Event;
 
 public class Client {
+
+    private static Router router;
+    private static HomeScreen homeScreen;
+    private static DecisionScreen decisionScreen;
+    private static ResultScreen resultScreen;
+    private static InsightsScreen insightsScreen;
+    private static BehaviorProfile profile;
+
     public static void main(String[] args) {
         HTMLDocument document = HTMLDocument.current();
-        HTMLElement status = document.getElementById("status");
+        profile = new BehaviorProfile();
 
-        // Smoke-test the data models
-        try {
-            DecisionSession session = new DecisionSession("Morning Routine");
+        // Initialize screens
+        router = new Router(document);
+        homeScreen = new HomeScreen(document);
+        decisionScreen = new DecisionScreen(document);
+        resultScreen = new ResultScreen(document);
+        insightsScreen = new InsightsScreen(document);
 
-            session.addOption(new Option("Study", false, true));
-            session.addOption(new Option("Watch TV", true, false));
-            session.addOption(new Option("Exercise", false, true));
+        // Render all screens
+        homeScreen.render(
+            profile.getDisciplineStreak(),
+            profile.getTotalDecisions(),
+            profile.getComfortRatio()
+        );
+        decisionScreen.render();
+        resultScreen.render();
+        insightsScreen.render();
 
-            session.addCriterion(new Criterion("Productivity", 0.5));
-            session.addCriterion(new Criterion("Enjoyment", 0.3));
-            session.addCriterion(new Criterion("Health", 0.2));
+        // Wire up navigation
+        wireNav(document, "nav-home", Router.SCREEN_HOME);
+        wireNav(document, "nav-decision", Router.SCREEN_DECISION);
+        wireNav(document, "nav-result", Router.SCREEN_RESULT);
+        wireNav(document, "nav-insights", Router.SCREEN_INSIGHTS);
 
-            // Set scores: [option][criterion]
-            session.setScores(new double[][] {
-                {9.0, 3.0, 5.0},  // Study
-                {1.0, 9.0, 2.0},  // Watch TV
-                {7.0, 5.0, 9.0}   // Exercise
+        // Wire "Make a Decision" CTA button
+        HTMLElement ctaBtn = document.getElementById("btn-new-decision");
+        if (ctaBtn != null) {
+            ctaBtn.addEventListener("click", new EventListener<Event>() {
+                @Override
+                public void handleEvent(Event evt) {
+                    router.navigateTo(Router.SCREEN_DECISION);
+                }
             });
+        }
 
-            session.validate();
+        // Start on home screen
+        router.navigateTo(Router.SCREEN_HOME);
+    }
 
-            Goal goal = new Goal("Be More Productive", "Focus on deep work", 0.8);
-            session.addGoal(goal);
-
-            BehaviorProfile profile = new BehaviorProfile();
-
-            if (status != null) {
-                status.setInnerHTML(
-                    "Engine Online. " 
-                    + session.getOptionCount() + " options, "
-                    + session.getCriteriaCount() + " criteria loaded. "
-                    + "Constraints validated. Ready for Phase 3."
-                );
-                status.getStyle().setProperty("color", "var(--color-discipline)");
-            }
-        } catch (Exception e) {
-            if (status != null) {
-                status.setInnerHTML("VALIDATION FAILED: " + e.getMessage());
-                status.getStyle().setProperty("color", "var(--color-failure)");
-            }
+    private static void wireNav(HTMLDocument document, String navId, String screenId) {
+        HTMLElement btn = document.getElementById(navId);
+        if (btn != null) {
+            btn.addEventListener("click", new EventListener<Event>() {
+                @Override
+                public void handleEvent(Event evt) {
+                    router.navigateTo(screenId);
+                }
+            });
         }
     }
 }

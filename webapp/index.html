@@ -4,18 +4,47 @@
     <title>Adaptive Daily Decision Engine</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A strict behavior coach that pushes you to make disciplined choices. Decide in under 20 seconds.">
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
+
     <div id="app">
-      <h1>Daily Decision Engine</h1>
-      <p id="status">Compiling core logic...</p>
+      <!-- Header -->
+      <header id="app-header">
+        <h1>Decision Engine</h1>
+      </header>
+
+      <!-- Navigation Bar -->
+      <nav id="app-nav">
+        <button id="nav-home" class="nav-btn active">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Home</span>
+        </button>
+        <button id="nav-decision" class="nav-btn">
+          <span class="nav-icon">🎯</span>
+          <span class="nav-label">Decide</span>
+        </button>
+        <button id="nav-result" class="nav-btn">
+          <span class="nav-icon">⚖️</span>
+          <span class="nav-label">Result</span>
+        </button>
+        <button id="nav-insights" class="nav-btn">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Insights</span>
+        </button>
+      </nav>
+
+      <!-- Screen Containers -->
+      <div id="screen-home" class="screen active"></div>
+      <div id="screen-decision" class="screen"></div>
+      <div id="screen-result" class="screen"></div>
+      <div id="screen-insights" class="screen"></div>
     </div>
-    
+
     <!-- Load TeaVM generated output -->
     <script type="text/javascript" charset="utf-8" src="js/classes.js"></script>
     <script>
-      // TeaVM exports main() — invoke it to start the engine
       if (typeof main === 'function') {
         main();
       }
