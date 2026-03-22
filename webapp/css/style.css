@@ -439,3 +439,153 @@ body {
 .template-summary li {
   margin-bottom: 4px;
 }
+
+/* ==================== DECISION FORM ==================== */
+.form-section {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.form-section h3 {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-add {
+  background: rgba(0, 255, 136, 0.1);
+  color: var(--color-discipline);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-add:hover {
+  background: rgba(0, 255, 136, 0.2);
+  transform: translateY(-1px);
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.input-field.weight {
+  width: 70px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.toggle-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.toggle-label.discipline input:checked {
+  accent-color: var(--color-discipline);
+}
+
+/* ==================== SCORE MATRIX ==================== */
+.matrix-container {
+  overflow-x: auto;
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.score-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.score-matrix th, .score-matrix td {
+  padding: 8px;
+  border: 1px solid var(--glass-border);
+  text-align: center;
+}
+
+.score-matrix th {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opt-header-cell {
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: left !important;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matrix-input {
+  width: 50px;
+  padding: 6px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-discipline);
+}
+
+.matrix-input:focus {
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+/* ==================== UTILS ==================== */
+.mt-20 { margin-top: 20px; }
+
+.warning-text {
+  font-size: 0.7rem;
+  color: var(--color-warning);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: var(--color-failure);
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 700;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
