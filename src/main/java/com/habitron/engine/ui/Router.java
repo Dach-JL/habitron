@@ -13,9 +13,10 @@ public class Router {
     public static final String SCREEN_DECISION = "screen-decision";
     public static final String SCREEN_RESULT = "screen-result";
     public static final String SCREEN_INSIGHTS = "screen-insights";
+    public static final String SCREEN_GOALS = "screen-goals";
 
     private static final String[] ALL_SCREENS = {
-        SCREEN_HOME, SCREEN_DECISION, SCREEN_RESULT, SCREEN_INSIGHTS
+        SCREEN_HOME, SCREEN_DECISION, SCREEN_RESULT, SCREEN_INSIGHTS, SCREEN_GOALS
     };
 
     private final HTMLDocument document;
@@ -44,8 +45,8 @@ public class Router {
 
     /** Highlight the active nav button */
     private void updateNav(String screenId) {
-        String[] navIds = {"nav-home", "nav-decision", "nav-result", "nav-insights"};
-        String[] screenIds = {SCREEN_HOME, SCREEN_DECISION, SCREEN_RESULT, SCREEN_INSIGHTS};
+        String[] navIds = {"nav-home", "nav-decision", "nav-result", "nav-insights", "nav-goals"};
+        String[] screenIds = {SCREEN_HOME, SCREEN_DECISION, SCREEN_RESULT, SCREEN_INSIGHTS, SCREEN_GOALS};
 
         for (int i = 0; i < navIds.length; i++) {
             HTMLElement btn = document.getElementById(navIds[i]);
