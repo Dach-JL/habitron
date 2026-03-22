@@ -17,15 +17,17 @@ public class Client {
     private static GoalScreen goalScreen;
     private static BehaviorProfile profile;
     private static GoalManager goalManager;
+    private static TemplateManager templateManager;
 
     public static void main(String[] args) {
         HTMLDocument document = HTMLDocument.current();
         profile = new BehaviorProfile();
+        templateManager = new TemplateManager();
 
         // Initialize screens
         router = new Router(document);
         homeScreen = new HomeScreen(document);
-        decisionScreen = new DecisionScreen(document);
+        decisionScreen = new DecisionScreen(document, templateManager);
         resultScreen = new ResultScreen(document);
         insightsScreen = new InsightsScreen(document);
         goalManager = new GoalManager();
